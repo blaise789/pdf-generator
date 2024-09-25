@@ -8,6 +8,7 @@ import (
 	"github.com/johnfercher/maroto/v2"
 	"github.com/johnfercher/maroto/v2/pkg/components/col"
 	"github.com/johnfercher/maroto/v2/pkg/components/image"
+	"github.com/johnfercher/maroto/v2/pkg/components/line"
 	"github.com/johnfercher/maroto/v2/pkg/components/row"
 	"github.com/johnfercher/maroto/v2/pkg/components/text"
 	"github.com/johnfercher/maroto/v2/pkg/config"
@@ -32,7 +33,7 @@ type Ticket struct{
     TicketCount        int
     ShowPosterLocation string
 }
-func pageHeader( c Company)core.Row{
+func pageHeader(c Company)  core.Row{
 	return row.New(16).Add(
 		image.NewFromFileCol(4,c.LogoLocation,props.Rect{
 			Center: false,
@@ -60,7 +61,41 @@ func getMaroto(c Company, t Ticket) core.Maroto{
 	if err!=nil{
 		log.Println("Error registering")
 	}
+	mrt.AddRow(6)
+	mrt.AddRow(4,line.NewCol(12,props.Line{
+		Thickness: 0.2,
+		Color: &props.Color{Red:200,Green: 200,Blue: 200},
+	}))
+	mrt.AddRow(6)
+	mrt.AddRows(getShowDetails(t)...)
+	
 	return mrt
+}
+func getShowDetails(t Ticket) []core.Row{
+	rows:=[]core.Row{
+		row.New(30).Add(
+			image.NewFromFileCol(4,t.ShowPosterLocation,props.Rect{
+				Center: true,
+				Percent: 100,
+			}),
+
+		),
+		row.New(6),
+		row.New(1),
+		row.New(3),
+		row.New(16),
+		row.New(3),
+		row.New(6),
+		row.New(20),
+		row.New(10),
+		row.New(1),
+		row.New(3),
+		row.New(10),
+	}
+
+
+	return rows
+
 }
 func main(){
 	c:=Company{
@@ -78,7 +113,7 @@ func main(){
         Cost:               620.00,
         Screen:             "Screen 1",
         TicketCount:        2,
-        ShowPosterLocation: "./poster.png",
+        ShowPosterLocation: "./event_location.png",
 	}
 	m:=getMaroto(c,t)
 	document,err:=m.Generate()
@@ -94,11 +129,12 @@ err=os.Mkdir("images",0755)
 if err!=nil{
 	log.Println("Error creating directory")
 } 
-err=document.Save("./images/"+filename)
+
+ }
+ err=document.Save("./images/"+filename)
 if err!=nil{
 	log.Println("unable to save the file",err)
 }
- }
 
 
 }
